@@ -3,31 +3,37 @@
 
 #include <vector>
 #include <cstddef>
-using namespace std;
 
+class Tensor {
+private:
+    float* data_;
+    std::vector<int> shape_;
+    size_t total_size_;
 
-class Tensor{
-    private:
-        float* data_; // this is the flat memory 
-        vector <int> shape_; // this is the shape of the image 2D,3D,etc...
-        size_t total_size_;
+public:
+    // 1. Constructors & Destructor
+    Tensor();
+    // create a tensor with a specific shape,find how much memory it needs and allocate it
+    explicit Tensor(const std::vector<int>& shape);
+    ~Tensor();
 
-    public:
-        // default constructor 
-        Tensor();
-        // shape constructor 
-        explicit Tensor(const vector <int> &shape);
-        // destructor 
-        ~Tensor();
+    // 2. Copy Semantics (Deep Copy - allocates new memory)
+    Tensor(const Tensor& other);
+    Tensor& operator=(const Tensor& other);
 
-        // deep copy constructor 
-        Tensor(const Tensor& other);
+    // 3. Move Semantics (Transfers ownership, prevents unnecessary copying)
+    Tensor(Tensor&& other) noexcept;
+    Tensor& operator=(Tensor&& other) noexcept;
 
-        // copy assignment operator 
-        Tensor& operator=(const Tensor& other);
+    // 4. Core Accessors
+    // Returns the raw pointer for ISPC kernels
+    float* data() const { return data_; } 
+    const std::vector<int>& shape() const { return shape_; }
+    size_t size() const { return total_size_; }
 
+    // 5. Utilities
+    void fill(float value);
+    void print_shape() const;
 };
 
-
-
-#endif 
+#endif // TENSOR_HPP
