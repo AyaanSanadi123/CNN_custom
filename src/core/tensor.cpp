@@ -57,10 +57,47 @@ Tensor& Tensor::operator=(const Tensor& other){
 }
 
 
-
+// transfer ownership of one tensor to a new object (thats why this is a constructor), 
+// fundamentally, dont create a new memory and copy, just make this point to the memory and disconnect other 
 Tensor :: Tensor(Tensor&& other) noexcept:
         data_(other.data_),shape_(move(other.shape_)),
         total_size_(other.total_size_){
             other.data_ = nullptr;
             other.total_size_ = 0;
         }
+
+
+
+// creating a new member function, its utility is to 
+// transfer ownership of one tensor object to an already existing tensor object 
+// we are transfering ownership from other to this 
+Tensor& Tensor::operator=(Tensor&& other) noexcept{
+    if(this == &other) return *this;
+
+    delete[] data_;
+
+    data_ = other.data_;
+    shape_ = move(other.shape_);
+    total_size_ = other.total_size_;
+
+    other.data_ = nullptr;
+    other.total_size_ = 0;
+
+    return *this;
+}
+
+void Tensor :: fill(float value){
+    for (size_t i = 0; i < total_size_; i++)
+    {
+        data_[i] = value;
+    }
+    
+}
+
+void Tensor::print_shape() const {
+    cout << "Tensor Shape: [";
+    for (size_t i = 0; i < shape_.size(); ++i) {
+        cout << shape_[i] << (i < shape_.size() - 1 ? ", " : "");
+    }
+    cout << "] (Total size: " << total_size_ << ")\n";
+}
